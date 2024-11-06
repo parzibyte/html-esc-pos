@@ -24,19 +24,27 @@ const iniciar = async () => {
 				titulo TEXT NOT NULL,
 				fecha_creacion TEXT NOT NULL,
 				fecha_modificacion TEXT NOT NULL,
+				ancho_ticket INTEGER NOT NULL DEFAULT 380,
+				ancho_pagina INTEGER NOT NULL DEFAULT 380,
+				aplicar_dithering INTEGER NOT NULL DEFAULT 0,
+				algoritmo_impresion INTEGER NOT NULL DEFAULT 0,
 				contenido TEXT NOT NULL)`);
 };
 
-const actualizarDiseño = async (id, contenido, fecha_modificacion, titulo) => {
+const actualizarDiseño = async (id, contenido, fecha_modificacion, titulo, anchoPagina, anchoTicket, aplicarDithering, algoritmoImpresion) => {
   const filas = await db.exec({
     sql: `UPDATE diseños_html
     SET
     contenido = ?,
     fecha_modificacion = ?,
-    titulo = ?
+    titulo = ?,
+    ancho_ticket = ?,
+    ancho_pagina = ?,
+    aplicar_dithering = ?,
+    algoritmo_impresion = ?
     WHERE id = ?
     RETURNING *`,
-    bind: [contenido, fecha_modificacion, titulo, id],
+    bind: [contenido, fecha_modificacion, titulo, anchoTicket, anchoPagina, aplicarDithering, algoritmoImpresion, id],
     returnValue: 'resultRows',
     rowMode: 'object',
   });
@@ -57,7 +65,9 @@ const insertarDiseño = async (titulo, contenido, fecha_creacion, fecha_modifica
 const obtenerDiseños = async () => {
   return await db.exec({
     sql: `SELECT id, titulo, fecha_creacion,
-    fecha_modificacion, contenido
+    fecha_modificacion, contenido,
+    ancho_pagina, ancho_ticket, aplicar_dithering,
+    algoritmo_impresion
     FROM diseños_html
     ORDER BY id ASC`,
     returnValue: 'resultRows',
@@ -68,7 +78,10 @@ const obtenerDiseños = async () => {
 const obtenerDiseñoPorId = async (id) => {
 
   const diseños = await db.exec({
-    sql: `SELECT id, titulo, fecha_creacion, fecha_modificacion, contenido
+    sql: `SELECT id, titulo, fecha_creacion,
+    fecha_modificacion, contenido,
+    ancho_pagina, ancho_ticket, aplicar_dithering,
+    algoritmo_impresion
     FROM diseños_html
     WHERE id = ?`,
     returnValue: 'resultRows',
