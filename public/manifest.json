@@ -1,0 +1,31 @@
+{
+    "name": "HTML a ESC POS",
+    "description": "Diseña tickets para impresora térmica con un editor WYSIWYG",
+    "short_name": "HTML a ESC POS",
+    "theme_color": "#2196f3",
+    "background_color": "#2196f3",
+    "display": "standalone",
+    "orientation": "portrait",
+    "scope": "./",
+    "start_url": "./",
+    "icons": [
+        {
+            "src": "./images/icono-512.png",
+            "type": "image/png",
+            "sizes": "512x512"
+        }
+    ],
+    "screenshots": [
+        {
+            "src": "./images/screenshot.png",
+            "type": "image/png",
+            "sizes": "1920x1014",
+            "form_factor": "wide"
+        },
+        {
+            "src": "./images/screenshot.png",
+            "type": "image/png",
+            "sizes": "1920x1014"
+        }
+    ]
+}

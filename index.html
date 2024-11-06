@@ -5,10 +5,16 @@
   <meta charset="UTF-8" />
   <link rel="icon" type="image/svg+xml" href="/vite.svg" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="stylesheet" href="./estilos.css">
-  <script src="./node_modules/hugerte/hugerte.min.js"></script>
-  <script src="./es_MX.js"></script>
-  <title>Vite App</title>
+  <link rel="stylesheet" href="./css/estilos.css">
+  <script src="./hugerte/hugerte.min.js"></script>
+  <script src="./hugerte/es_MX.js"></script>
+  <link rel="manifest" href="./manifest.json">
+  <script type="text/javascript">
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("sw.js");
+    }
+  </script>
+  <title>HTML a ESC POS</title>
 </head>
 
 <body>
