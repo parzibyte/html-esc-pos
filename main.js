@@ -13,6 +13,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const $anchoPagina = document.querySelector("#anchoPagina");
     const $anchoTicket = document.querySelector("#anchoTicket");
     const $aplicarDithering = document.querySelector("#aplicarDithering");
+
     const llenarSelectConImpresoras = async () => {
         try {
             const respuestaHttp = await fetch("http://localhost:8000/impresoras");
@@ -28,11 +29,10 @@ document.addEventListener("DOMContentLoaded", () => {
             alert("Error obteniendo impresoras. ¿El plugin se está ejecutando? el error es: " + e.message);
         }
     }
-    llenarSelectConImpresoras();
     const formatearFecha = (fecha) => {
         return formateador.format(new Date(fecha));
     }
-    const buscarIndice = (id) => {
+    const buscarIndiceDeDiseñoSegunId = (id) => {
         for (let i = 0; i < $selectDiseñosExistentes.options.length; i++) {
             const opcion = $selectDiseñosExistentes[i];
             if (opcion.value === id) {
@@ -42,7 +42,7 @@ document.addEventListener("DOMContentLoaded", () => {
         return -1;
     }
 
-    const actualizarEstadoDeBotones = () => {
+    const ocultarOMostrarBotonesSegunCantidadDeDiseños = () => {
         const ocultables = document.querySelectorAll(".ocultable-sin-elementos");
         if ($selectDiseñosExistentes.options.length <= 0) {
             for (const ocultable of ocultables) {
@@ -56,6 +56,7 @@ document.addEventListener("DOMContentLoaded", () => {
             $alerta.style.display = "none";
         }
     }
+
     const obtenerTextoDeDiseñoParaMostrarEnSelect = (diseño) => {
         let fechaFormateada = "";
         try {
@@ -63,7 +64,8 @@ document.addEventListener("DOMContentLoaded", () => {
         } catch (e) { }
         return `${diseño.titulo} (${fechaFormateada})`;
     }
-    const llenarListaConDiseños = (diseños) => {
+
+    const llenarSelectConDiseños = (diseños) => {
         limpiarSelect($selectDiseñosExistentes);
         for (let i = 0; i < diseños.length; i++) {
             const diseño = diseños[i];
@@ -75,21 +77,42 @@ document.addEventListener("DOMContentLoaded", () => {
             $selectDiseñosExistentes.appendChild($option);
         }
     }
+    const limpiarSelect = ($select) => {
+        for (let i = $select.options.length; i >= 0; i--) {
+            $select.remove(i);
+        }
+    };
+
+    const actualizarDiseñoSeleccionado = () => {
+        worker.postMessage(["actualizar_diseño", {
+            id: $selectDiseñosExistentes.value,
+            contenido: hugerte.activeEditor.getContent(),
+            fecha_modificacion: obtenerFechaYHoraActual(),
+            titulo: $titulo.value,
+            anchoPagina: $anchoPagina.valueAsNumber,
+            anchoTicket: $anchoTicket.valueAsNumber,
+            aplicarDithering: $aplicarDithering.checked,
+            algoritmoImpresion: $selectAlgoritmo.value,
+        }])
+    }
+    const refrescarCamposSegunDiseñoSeleccionado = () => {
+        worker.postMessage(["obtener_diseño", { id: $selectDiseñosExistentes.value }]);
+    }
+    // Listeners
     worker.onmessage = (evento) => {
         const accion = evento.data[0];
         const argumentos = evento.data[1];
-        console.log("El worker dice %o con %o", accion, argumentos);
         switch (accion) {
             case "diseño_eliminado":
-                const indiceParaEliminar = buscarIndice(argumentos.id.toString())
+                const indiceParaEliminar = buscarIndiceDeDiseñoSegunId(argumentos.id.toString())
                 if (indiceParaEliminar !== -1) {
                     $selectDiseñosExistentes.remove(indiceParaEliminar);
-                    refrescarSegunSeleccionado();
+                    refrescarCamposSegunDiseñoSeleccionado();
                 }
-                actualizarEstadoDeBotones();
+                ocultarOMostrarBotonesSegunCantidadDeDiseños();
                 break;
             case "diseño_actualizado":
-                const indice = buscarIndice(argumentos.id.toString())
+                const indice = buscarIndiceDeDiseñoSegunId(argumentos.id.toString())
                 if (indice !== -1) {
                     $selectDiseñosExistentes.options[indice].text = obtenerTextoDeDiseñoParaMostrarEnSelect(argumentos);
                 }
@@ -102,11 +125,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 worker.postMessage(["obtener_diseños"]);
                 break;
             case "diseños_obtenidos":
-                // Aquí tenemos los diseños en argumentos, no hay necesidad de
-                // declarar otra variable
-                llenarListaConDiseños(argumentos);
-                actualizarEstadoDeBotones();
-                refrescarSegunSeleccionado();
+                llenarSelectConDiseños(argumentos);
+                ocultarOMostrarBotonesSegunCantidadDeDiseños();
+                refrescarCamposSegunDiseñoSeleccionado();
                 break;
             case "diseño_obtenido":
                 if (argumentos) {
@@ -120,12 +141,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 break;
         }
     }
-    worker.postMessage(["iniciar"]);
-    const limpiarSelect = ($select) => {
-        for (let i = $select.options.length; i >= 0; i--) {
-            $select.remove(i);
-        }
-    };
+
 
     $btnEliminarDiseño.addEventListener("click", () => {
         if (!confirm("¿Eliminar diseño actualmente seleccionado?")) {
@@ -159,7 +175,6 @@ document.addEventListener("DOMContentLoaded", () => {
     ${contenido}
 </body>
 </html>`
-        console.log("El HTML completo que se imprime es %o", htmlCompleto);
         const cargaUtil = {
             "serial": "",
             "nombreImpresora": $selectImpresoras.value,
@@ -177,7 +192,6 @@ document.addEventListener("DOMContentLoaded", () => {
             ]
         };
         try {
-
             const respuestaHttp = await fetch("http://localhost:8000/imprimir", {
                 method: "POST",
                 body: JSON.stringify(cargaUtil)
@@ -197,44 +211,15 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    const refrescarSegunSeleccionado = () => {
-        console.log("Vamos a obtener el contenido del diseño %o", $selectDiseñosExistentes.value)
-        worker.postMessage(["obtener_diseño", { id: $selectDiseñosExistentes.value }]);
-    }
-    const actualizarDiseñoActualmenteEditado = () => {
-        worker.postMessage(["actualizar_diseño", {
-            id: $selectDiseñosExistentes.value,
-            contenido: hugerte.activeEditor.getContent(),
-            fecha_modificacion: obtenerFechaYHoraActual(),
-            titulo: $titulo.value,
-            anchoPagina: $anchoPagina.valueAsNumber,
-            anchoTicket: $anchoTicket.valueAsNumber,
-            aplicarDithering: $aplicarDithering.checked,
-            algoritmoImpresion: $selectAlgoritmo.value,
-        }])
-    }
+
     [$anchoPagina, $anchoTicket, $selectAlgoritmo, $aplicarDithering, $titulo].forEach($elemento => {
-        $elemento.addEventListener("change", actualizarDiseñoActualmenteEditado)
+        $elemento.addEventListener("change", actualizarDiseñoSeleccionado)
     })
     $selectDiseñosExistentes.addEventListener("change", () => {
-        refrescarSegunSeleccionado();
+        refrescarCamposSegunDiseñoSeleccionado();
     })
 
-    const manejador_de_subida_de_imagen = (blobInfo, progress) => new Promise((resolve, reject) => {
-        const verdaderoBlob = blobInfo.blob();
-        const fd = new FileReader();
-        fd.onload = () => {
-            resolve(fd.result);
-            setTimeout(() => {
-                const posibleBoton = document.querySelector(".tox-button[data-mce-name='Save']")
-                if (posibleBoton) {
-                    posibleBoton.click();
-                }
-            }, 200)
-        }
-        fd.readAsDataURL(verdaderoBlob);
-    });
-
+    // Inits
     hugerte.init({
         init_instance_callback: function (editor) {
             editor.on("OpenWindow", function (e) {
@@ -248,13 +233,28 @@ document.addEventListener("DOMContentLoaded", () => {
                 if ($selectDiseñosExistentes.options.length <= 0) {
                     return;
                 }
-                actualizarDiseñoActualmenteEditado();
+                actualizarDiseñoSeleccionado();
             })
         },
         selector: '#contenedor',
         plugins: 'image',
         toolbar: "image",
         language: "es_MX",
-        images_upload_handler: manejador_de_subida_de_imagen,
+        images_upload_handler: (blobInfo, progress) => new Promise((resolve, reject) => {
+            const verdaderoBlob = blobInfo.blob();
+            const fd = new FileReader();
+            fd.onload = () => {
+                resolve(fd.result);
+                setTimeout(() => {
+                    const posibleBoton = document.querySelector(".tox-button[data-mce-name='Save']")
+                    if (posibleBoton) {
+                        posibleBoton.click();
+                    }
+                }, 200)
+            }
+            fd.readAsDataURL(verdaderoBlob);
+        }),
     });
+    llenarSelectConImpresoras();
+    worker.postMessage(["iniciar"]);
 })

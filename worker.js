@@ -1,4 +1,9 @@
 import sqlite3InitModule from '@sqlite.org/sqlite-wasm';
+const consultaObtenerDiseñosSinCondiciones = `SELECT id, titulo, fecha_creacion,
+    fecha_modificacion, contenido,
+    ancho_pagina, ancho_ticket, aplicar_dithering,
+    algoritmo_impresion
+    FROM diseños_html`;
 const NOMBRE_BASE_DE_DATOS = 'html_designs.sqlite';
 let db;
 const iniciar = async () => {
@@ -62,13 +67,11 @@ const insertarDiseño = async (titulo, contenido, fecha_creacion, fecha_modifica
   });
   return filas[0];
 };
+
+
 const obtenerDiseños = async () => {
   return await db.exec({
-    sql: `SELECT id, titulo, fecha_creacion,
-    fecha_modificacion, contenido,
-    ancho_pagina, ancho_ticket, aplicar_dithering,
-    algoritmo_impresion
-    FROM diseños_html
+    sql: `${consultaObtenerDiseñosSinCondiciones}
     ORDER BY id ASC`,
     returnValue: 'resultRows',
     rowMode: 'object',
@@ -76,13 +79,8 @@ const obtenerDiseños = async () => {
 };
 
 const obtenerDiseñoPorId = async (id) => {
-
   const diseños = await db.exec({
-    sql: `SELECT id, titulo, fecha_creacion,
-    fecha_modificacion, contenido,
-    ancho_pagina, ancho_ticket, aplicar_dithering,
-    algoritmo_impresion
-    FROM diseños_html
+    sql: `${consultaObtenerDiseñosSinCondiciones}
     WHERE id = ?`,
     returnValue: 'resultRows',
     rowMode: 'object',
