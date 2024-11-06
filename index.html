@@ -22,19 +22,23 @@
     <div class="flex flex-col gap-2 mb-2">
       <button class="max-w-max bg-green-500 hover:bg-green-400 p-2 rounded-md text-white font-bold"
         id="btnNuevoDiseño">Nuevo diseño</button>
+      <div id="alerta" class="bg-red-500 text-white p-2 rounded-md">
+        Agrega un diseño para comenzar a trabajar
+      </div>
       <select
         class="focus:border-2 border border-gray-200 focus:border-blue-500 rounded-md h-10 w-full p-1 outline-none text-xl"
         id="diseños"></select>
-      <button class="max-w-max bg-red-500 hover:bg-red-400 p-2 rounded-md text-white" id="btnEliminarDiseño">Eliminar
+      <button class="ocultable-sin-elementos max-w-max bg-red-500 hover:bg-red-400 p-2 rounded-md text-white"
+        id="btnEliminarDiseño">Eliminar
         diseño</button>
-      <p>Cambiar título</p>
+      <p class="ocultable-sin-elementos ">Cambiar título</p>
       <input
-        class="focus:border-blue-500 focus:border-2 max-w-full w-full max-h-10 h-10 border border-gray-200  rounded-md p-1 outline-none text-xl disabled:bg-gray-200 disabled:cursor-not-allowed"
+        class="ocultable-sin-elementos focus:border-blue-500 focus:border-2 max-w-full w-full max-h-10 h-10 border border-gray-200  rounded-md p-1 outline-none text-xl disabled:bg-gray-200 disabled:cursor-not-allowed"
         type="text" id="titulo">
     </div>
 
     <textarea name="" id="contenedor"></textarea>
-    <div class="my-2">
+    <div class="my-2 ocultable-sin-elementos ">
       <label for="impresoras">Impresora</label>
       <select
         class="focus:border-2 border border-gray-200 focus:border-blue-500 rounded-md h-10 w-full p-1 outline-none text-xl"

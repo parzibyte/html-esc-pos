@@ -2,6 +2,7 @@ import { obtenerFechaYHoraActual } from "./utiles";
 const worker = new Worker(new URL("./worker.js", import.meta.url), { type: "module" });
 document.addEventListener("DOMContentLoaded", () => {
     const $btnImprimir = document.querySelector("#btnImprimir");
+    const $alerta = document.querySelector("#alerta");
     const $btnNuevoDiseño = document.querySelector("#btnNuevoDiseño");
     const $selectDiseñosExistentes = document.querySelector("#diseños");
     const $titulo = document.querySelector("#titulo");
@@ -37,6 +38,21 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         return -1;
     }
+
+    const actualizarEstadoDeBotones = () => {
+        const ocultables = document.querySelectorAll(".ocultable-sin-elementos");
+        if ($selectDiseñosExistentes.options.length <= 0) {
+            for (const ocultable of ocultables) {
+                ocultable.style.visibility = "hidden";
+            }
+            $alerta.style.display = "block";
+        } else {
+            for (const ocultable of ocultables) {
+                ocultable.style.visibility = "visible";
+            }
+            $alerta.style.display = "none";
+        }
+    }
     const llenarListaConDiseños = (diseños) => {
         limpiarSelect($selectDiseñosExistentes);
         for (let i = 0; i < diseños.length; i++) {
@@ -64,6 +80,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     $selectDiseñosExistentes.remove(indiceParaEliminar);
                     refrescarSegunSeleccionado();
                 }
+                actualizarEstadoDeBotones();
                 break;
             case "diseño_actualizado":
                 const indice = buscarIndice(argumentos.id.toString())
@@ -82,6 +99,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 // Aquí tenemos los diseños en argumentos, no hay necesidad de
                 // declarar otra variable
                 llenarListaConDiseños(argumentos);
+                actualizarEstadoDeBotones();
                 refrescarSegunSeleccionado();
                 break;
             case "diseño_obtenido":
