@@ -133,6 +133,10 @@ self.onmessage = async (evento) => {
         argumentos.contenido,
         argumentos.fecha_modificacion,
         argumentos.titulo,
+        argumentos.anchoPagina,
+        argumentos.anchoTicket,
+        argumentos.aplicarDithering,
+        argumentos.algoritmoImpresion,
       );
       self.postMessage(['diseño_actualizado', diseñoRecienActualizado]);
       break;

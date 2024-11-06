@@ -9,9 +9,12 @@ document.addEventListener("DOMContentLoaded", () => {
     const $btnEliminarDiseño = document.querySelector("#btnEliminarDiseño");
     const formateador = new Intl.DateTimeFormat('es-MX', { dateStyle: 'medium', timeStyle: 'medium' })
     const $selectImpresoras = document.querySelector("#impresoras");
+    const $selectAlgoritmo = document.querySelector("#algoritmo");
+    const $anchoPagina = document.querySelector("#anchoPagina");
+    const $anchoTicket = document.querySelector("#anchoTicket");
+    const $aplicarDithering = document.querySelector("#aplicarDithering");
     const llenarSelectConImpresoras = async () => {
         try {
-
             const respuestaHttp = await fetch("http://localhost:8000/impresoras");
             const impresoras = await respuestaHttp.json();
             limpiarSelect($selectImpresoras);
@@ -106,6 +109,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (argumentos) {
                     $titulo.value = argumentos.titulo;
                     hugerte.activeEditor.setContent(argumentos.contenido);
+                    $anchoPagina.valueAsNumber = argumentos.ancho_pagina;
+                    $anchoTicket.valueAsNumber = argumentos.ancho_ticket;
+                    $aplicarDithering.checked = Boolean(argumentos.aplicar_dithering);
+                    $selectAlgoritmo.value = argumentos.algoritmo_impresion;
                 }
                 break;
         }
@@ -116,6 +123,7 @@ document.addEventListener("DOMContentLoaded", () => {
             $select.remove(i);
         }
     };
+
     $btnEliminarDiseño.addEventListener("click", () => {
         if (!confirm("¿Eliminar diseño actualmente seleccionado?")) {
             return;
@@ -157,10 +165,10 @@ document.addEventListener("DOMContentLoaded", () => {
                     "nombre": "GenerarImagenAPartirDeHtmlEImprimir",
                     "argumentos": [
                         htmlCompleto,
-                        380,
-                        380,
-                        0,
-                        false
+                        $anchoPagina.valueAsNumber,
+                        $anchoTicket.valueAsNumber,
+                        Number($selectAlgoritmo.value),
+                        $aplicarDithering.checked,
                     ]
                 }
             ]
@@ -196,13 +204,17 @@ document.addEventListener("DOMContentLoaded", () => {
             contenido: hugerte.activeEditor.getContent(),
             fecha_modificacion: obtenerFechaYHoraActual(),
             titulo: $titulo.value,
+            anchoPagina: $anchoPagina.valueAsNumber,
+            anchoTicket: $anchoTicket.valueAsNumber,
+            aplicarDithering: $aplicarDithering.checked,
+            algoritmoImpresion: $selectAlgoritmo.value,
         }])
     }
+    [$anchoPagina, $anchoTicket, $selectAlgoritmo, $aplicarDithering, $titulo].forEach($elemento => {
+        $elemento.addEventListener("change", actualizarDiseñoActualmenteEditado)
+    })
     $selectDiseñosExistentes.addEventListener("change", () => {
         refrescarSegunSeleccionado();
-    })
-    $titulo.addEventListener("change", () => {
-        actualizarDiseñoActualmenteEditado();
     })
 
     const manejador_de_subida_de_imagen = (blobInfo, progress) => new Promise((resolve, reject) => {

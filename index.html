@@ -39,12 +39,43 @@
 
     <textarea name="" id="contenedor"></textarea>
     <div class="my-2 ocultable-sin-elementos ">
-      <label for="impresoras">Impresora</label>
-      <select
-        class="focus:border-2 border border-gray-200 focus:border-blue-500 rounded-md h-10 w-full p-1 outline-none text-xl"
-        id="impresoras"></select>
-      <button class="mt-2 max-w-max bg-green-500 hover:bg-green-400 p-2 rounded-md text-white"
-        id="btnImprimir">Imprimir</button>
+      <div class="flex flex-col">
+        <div class="flex flex-row gap-2">
+          <div>
+            <label for="anchoPagina">Ancho de página:</label>
+            <input
+              class="focus:border-blue-500 focus:border-2 max-w-full w-full max-h-10 h-10 border border-gray-200  rounded-md p-1 outline-none text-xl disabled:bg-gray-200 disabled:cursor-not-allowed"
+              type="number" id="anchoPagina">
+          </div>
+          <div>
+            <label for="anchoTicket">Ancho de ticket:</label>
+            <input
+              class="focus:border-blue-500 focus:border-2 max-w-full w-full max-h-10 h-10 border border-gray-200  rounded-md p-1 outline-none text-xl disabled:bg-gray-200 disabled:cursor-not-allowed"
+              type="number" id="anchoTicket">
+          </div>
+          <div>
+            <label for="aplicarDithering">¿Aplicar dithering?</label>
+            <input class="h-4 w-4 " type="checkbox" id="aplicarDithering">
+          </div>
+          <div>
+            <label for="algoritmo">Algoritmo de impresión de imágenes</label>
+            <select
+              class="focus:border-2 border border-gray-200 focus:border-blue-500 rounded-md h-10 w-full p-1 outline-none text-xl"
+              id="algoritmo">
+              <option value="0">Raster bit image</option>
+              <option value="1">Bit image column format</option>
+              <option value="2">NV Graphics</option>
+            </select>
+          </div>
+        </div>
+        <label for="impresoras">Impresora</label>
+        <select
+          class="focus:border-2 border border-gray-200 focus:border-blue-500 rounded-md h-10 w-full p-1 outline-none text-xl"
+          id="impresoras"></select>
+
+        <button class="mt-2 max-w-max bg-green-500 hover:bg-green-400 p-2 rounded-md text-white"
+          id="btnImprimir">Imprimir</button>
+      </div>
     </div>
   </div>
   <script type="module" src="./main.js"></script>
