@@ -56,17 +56,20 @@ document.addEventListener("DOMContentLoaded", () => {
             $alerta.style.display = "none";
         }
     }
+    const obtenerTextoDeDiseñoParaMostrarEnSelect = (diseño) => {
+        let fechaFormateada = "";
+        try {
+            fechaFormateada = formatearFecha(diseño.fecha_modificacion);
+        } catch (e) { }
+        return `${diseño.titulo} (${fechaFormateada})`;
+    }
     const llenarListaConDiseños = (diseños) => {
         limpiarSelect($selectDiseñosExistentes);
         for (let i = 0; i < diseños.length; i++) {
             const diseño = diseños[i];
-            let fechaFormateada = "";
-            try {
-                fechaFormateada = formatearFecha(diseño.fecha_modificacion);
-            } catch (e) { }
             const $option = Object.assign(document.createElement("option"), {
                 value: diseño.id,
-                text: `${diseño.titulo} (${fechaFormateada})`,
+                text: obtenerTextoDeDiseñoParaMostrarEnSelect(diseño),
                 selected: i === diseños.length - 1,
             })
             $selectDiseñosExistentes.appendChild($option);
@@ -88,7 +91,7 @@ document.addEventListener("DOMContentLoaded", () => {
             case "diseño_actualizado":
                 const indice = buscarIndice(argumentos.id.toString())
                 if (indice !== -1) {
-                    $selectDiseñosExistentes.options[indice].text = argumentos.titulo;
+                    $selectDiseñosExistentes.options[indice].text = obtenerTextoDeDiseñoParaMostrarEnSelect(argumentos);
                 }
                 break;
             case "iniciado":
