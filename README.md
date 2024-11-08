@@ -15,7 +15,15 @@ Para Tailwind:
 
 2. `npm run build`
 
-
 3. `workbox generateSW workbox-config.cjs`
 
 4. Distribuye el contenido de **dist**
+
+Todo junto:
+
+```bash
+npx tailwindcss -i ./public/css/estilos_entrada.css -o ./public/css/estilos.css --minify
+npm run build
+workbox generateSW workbox-config.cjs
+
+```
