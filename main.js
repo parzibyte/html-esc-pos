@@ -238,7 +238,7 @@ document.addEventListener("DOMContentLoaded", () => {
         },
         selector: '#contenedor',
         plugins: 'image',
-        toolbar: "image",
+        toolbar: "undo redo | blocks | bold italic | alignleft aligncenter alignright alignjustify | outdent indent | image",
         language: "es_MX",
         images_upload_handler: (blobInfo, progress) => new Promise((resolve, reject) => {
             const verdaderoBlob = blobInfo.blob();
