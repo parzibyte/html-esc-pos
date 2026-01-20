@@ -1,3 +1,16 @@
+import hugerte from 'hugerte';
+
+import 'hugerte/themes/silver';
+import 'hugerte/icons/default';
+import 'hugerte/models/dom';
+
+import 'hugerte/plugins/table';
+import 'hugerte/plugins/image';
+import 'hugerte/plugins/lists';
+import 'hugerte/plugins/link';
+
+import 'hugerte/skins/ui/oxide/skin.min.css';
+
 import { obtenerFechaYHoraActual } from "./utiles";
 const worker = new Worker(new URL("./worker.js", import.meta.url), { type: "module" });
 document.addEventListener("DOMContentLoaded", () => {
@@ -237,9 +250,15 @@ document.addEventListener("DOMContentLoaded", () => {
             })
         },
         selector: '#contenedor',
-        plugins: 'image',
+        plugins: 'image table',
         toolbar: "undo redo | blocks | bold italic | alignleft aligncenter alignright alignjustify | outdent indent | image",
         language: "es_MX",
+        language_url: '/hugerte/es_MX.js',
+        content_style: `
+    body { font-family: sans-serif; font-size: 14px; }
+    table { border-collapse: collapse; width: 100%; border: 1px solid #ccc; }
+    table td, table th { border: 1px solid #ddd; padding: 4px; min-width: 20px; }
+  `,
         images_upload_handler: (blobInfo, progress) => new Promise((resolve, reject) => {
             const verdaderoBlob = blobInfo.blob();
             const fd = new FileReader();
