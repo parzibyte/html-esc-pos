@@ -2,6 +2,10 @@
 
 https://parzibyte.me/apps/html-esc-pos/
 
+![HTML to thermal printer ESC POS](https://raw.githubusercontent.com/parzibyte/html-esc-pos/master/assets/demo.jpg)
+
+https://parzibyte.me/apps/html-esc-pos/
+
 ## Versiones de Node
 
 ```bash
