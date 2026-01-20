@@ -2,7 +2,7 @@
 
 https://parzibyte.me/apps/html-esc-pos/
 
-![HTML to thermal printer ESC POS](https://raw.githubusercontent.com/parzibyte/html-esc-pos/master/assets/demo.jpg)
+![HTML to thermal printer ESC POS](https://raw.githubusercontent.com/parzibyte/html-esc-pos/master/demo.jpg)
 
 https://parzibyte.me/apps/html-esc-pos/
 
