@@ -26,6 +26,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const $anchoPagina = document.querySelector("#anchoPagina");
     const $anchoTicket = document.querySelector("#anchoTicket");
     const $aplicarDithering = document.querySelector("#aplicarDithering");
+    const $licencia = document.querySelector("#licencia");
 
     const llenarSelectConImpresoras = async () => {
         try {
@@ -116,6 +117,10 @@ document.addEventListener("DOMContentLoaded", () => {
         const accion = evento.data[0];
         const argumentos = evento.data[1];
         switch (accion) {
+            case "licencia_obtenida":
+                $licencia.value = argumentos;
+                worker.postMessage(["obtener_diseños"]);
+                break;
             case "diseño_eliminado":
                 const indiceParaEliminar = buscarIndiceDeDiseñoSegunId(argumentos.id.toString())
                 if (indiceParaEliminar !== -1) {
@@ -131,7 +136,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
                 break;
             case "iniciado":
-                worker.postMessage(["obtener_diseños"]);
+                worker.postMessage(["obtener_licencia"]);
                 break;
 
             case "diseño_insertado":
@@ -189,7 +194,7 @@ document.addEventListener("DOMContentLoaded", () => {
 </body>
 </html>`
         const cargaUtil = {
-            "serial": "",
+            "serial": $licencia.value,
             "nombreImpresora": $selectImpresoras.value,
             "operaciones": [
                 {
@@ -232,7 +237,10 @@ document.addEventListener("DOMContentLoaded", () => {
         refrescarCamposSegunDiseñoSeleccionado();
     })
 
-    // Inits
+    $licencia.addEventListener("change", () => {
+        worker.postMessage(["guardar_licencia", { licencia: $licencia.value }]);
+    })
+
     hugerte.init({
         init_instance_callback: function (editor) {
             editor.on("OpenWindow", function (e) {
@@ -249,11 +257,13 @@ document.addEventListener("DOMContentLoaded", () => {
                 actualizarDiseñoSeleccionado();
             })
         },
+        skin: false,
+        content_css: false,
         selector: '#contenedor',
         plugins: 'image table',
         toolbar: "undo redo | blocks | bold italic | alignleft aligncenter alignright alignjustify | outdent indent | image",
         language: "es_MX",
-        language_url: '/hugerte/es_MX.js',
+        language_url: './hugerte/es_MX.js',
         content_style: `
     body { font-family: sans-serif; font-size: 14px; }
     table { border-collapse: collapse; width: 100%; border: 1px solid #ccc; }
