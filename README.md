@@ -1,5 +1,11 @@
 # HTML a ESC POS
 
+## Versiones de Node
+
+```bash
+C:\Windows\system32>node -v
+v20.15.1
+```
 ## Modo desarrollo
 
 `npm run dev`
@@ -20,7 +26,7 @@ Todo junto:
 npx tailwindcss -i ./estilos_entrada.css -o ./public/css/estilos.css --minify
 npm run build
 workbox generateSW workbox-config.cjs
-
+rsync -rnvzi --delete dist/ parzibyte@servidor:/var/www/misitio/apps/html-esc-pos
 
 ```
 
