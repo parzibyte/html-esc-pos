@@ -34,7 +34,37 @@ const iniciar = async () => {
 				aplicar_dithering INTEGER NOT NULL DEFAULT 0,
 				algoritmo_impresion INTEGER NOT NULL DEFAULT 0,
 				contenido TEXT NOT NULL)`);
+  db.exec(`CREATE TABLE IF NOT EXISTS ajustes(
+				id INTEGER PRIMARY KEY AUTOINCREMENT,
+				licencia TEXT NOT NULL)`);
 };
+
+const obtenerLicencia = async () => {
+  const filas = db.exec({
+    sql: "SELECT licencia FROM ajustes",
+    returnValue: "resultRows",
+    rowMode: "object",
+  });
+  if (filas.length <= 0) {
+    return "";
+  }
+  return filas[0].licencia;
+}
+
+const guardarLicencia = async (licencia) => {
+  const tieneLicencia = !!await obtenerLicencia();
+  let sql = "INSERT INTO ajustes(licencia) VALUES (?) RETURNING *";
+  if (tieneLicencia) {
+    sql = "UPDATE ajustes SET licencia = ? RETURNING *";
+  }
+  const filas = await db.exec({
+    sql,
+    bind: [licencia],
+    returnValue: 'resultRows',
+    rowMode: 'object',
+  });
+  return filas[0];
+}
 
 const actualizarDiseño = async (id, contenido, fecha_modificacion, titulo, anchoPagina, anchoTicket, aplicarDithering, algoritmoImpresion) => {
   const filas = await db.exec({
@@ -108,6 +138,12 @@ self.onmessage = async (evento) => {
       await iniciar();
       self.postMessage(['iniciado']);
       break;
+    case 'guardar_licencia':
+      const licenciaRecienGuardada = await guardarLicencia(
+        argumentos.licencia,
+      );
+      self.postMessage(['licencia_insertada', licenciaRecienGuardada]);
+      break;
     case 'insertar_diseño':
       const diseñoRecienInsertado = await insertarDiseño(
         argumentos.titulo,
@@ -116,6 +152,9 @@ self.onmessage = async (evento) => {
         argumentos.fecha_modificacion,
       );
       self.postMessage(['diseño_insertado', diseñoRecienInsertado]);
+      break;
+    case 'obtener_licencia':
+      self.postMessage(["licencia_obtenida", await obtenerLicencia()]);
       break;
     case 'obtener_diseños':
       const diseños = await obtenerDiseños();
